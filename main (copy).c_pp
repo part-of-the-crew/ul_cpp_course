@@ -1,0 +1,202 @@
+#include <iostream>
+#include <vector>
+/*
+consteval int get_value(){
+    return 3;
+}
+
+int main(){
+    constexpr int value = get_value();
+    std::cout << "value : " << value << std::endl;
+    return 0;
+}
+*/
+using std::string;
+using std::vector;
+using std::cout;
+using std::endl;
+
+enum class OrderBookType {bid, ask};
+
+class OrderBookEntry {
+    public:
+    OrderBookEntry(
+                    double _price,
+                    double _amount,
+                    string _timestamp,
+                    string _produce,
+                    OrderBookType orderType
+                )
+    :   price(_price),
+        amount(_amount),
+        timestamp(_timestamp),
+        produce(_produce),
+        orderType(orderType)
+    {
+
+    };
+    double price;
+    double amount;
+    string timestamp;
+    string produce;
+    OrderBookType orderType;
+};
+
+double computeAveragePrice (const vector <OrderBookEntry> &vec)
+{
+    double tempPrice;
+    for (const auto& m : vec)
+    {
+        tempPrice += m.price;
+    }
+    return tempPrice/vec.size();
+}
+
+double computeLowPrice (const vector <OrderBookEntry> &vec)
+{
+    double tempPrice = vec.at(0).price;
+    for (const auto& m : vec)
+    {
+        if (m.price < tempPrice)
+            tempPrice = m.price;
+    }
+    return tempPrice;
+}
+double computeHighPrice (const vector <OrderBookEntry> &vec)
+{
+    double tempPrice;
+    for (const auto& m : vec)
+    {
+        if (m.price > tempPrice)
+            tempPrice = m.price;
+    }
+    return tempPrice;
+}
+double computePriceSpread (const vector <OrderBookEntry> &vec)
+{
+    return computeHighPrice(vec) - computeLowPrice(vec);
+}
+
+double computePriceSpread(std::vector<OrderBookEntry> &entries){
+
+    auto minPriceIterator = std::min_element(entries.begin(), entries.end(),
+                                             [](const OrderBookEntry &a, const OrderBookEntry &b) {
+                                                 return a.price < b.price;
+                                             });
+
+    auto maxPriceIterator = std::max_element(entries.begin(), entries.end(),
+                                             [](const OrderBookEntry &a, const OrderBookEntry &b) {
+                                                 return a.price < b.price;
+                                             });
+    double spreadPrice = maxPriceIterator->price - minPriceIterator->price;
+    return spreadPrice;
+}
+
+
+
+
+int main()
+{
+    
+vector<OrderBookEntry> orders;
+
+orders.push_back (
+                OrderBookEntry
+                {
+                    1.0,
+                    7.44564869,
+                    "2020/03/17 17:01:24.884492",
+                    "ETH/BTC",
+                    OrderBookType::bid
+                }
+
+);
+
+orders.push_back (
+                OrderBookEntry
+                {
+                    5.0,
+                    3.467434,
+                    "2020/03/17 17:01:24.884492",
+                    "ETH/BTC",
+                    OrderBookType::bid
+                }
+
+);
+    cout << "computeAveragePrice = " << computeAveragePrice(orders) << endl;
+    cout << "computeLowPrice = " << computeLowPrice(orders) << endl;
+    cout << "computeHighPrice = " << computeHighPrice(orders) << endl;
+    cout << "computePriceSpread = " << computePriceSpread(orders) << endl;
+
+    for (const auto& m : orders)
+    {
+        cout << "timestamp = " << m.timestamp << endl;
+        cout << "price = " << m.price << endl;
+        cout << "amount = " << m.amount << endl;
+        cout << "produce = " << m.produce << endl;
+        cout << (m.orderType == OrderBookType::bid ? "bid":"ask") << endl;
+    }
+
+
+    // Menu-driven program loop
+    bool exitProgram = false;
+    while (!exitProgram)
+    {
+        std::cout << "1: Print help" << std::endl;
+        std::cout << "2: Print exchange stats" << std::endl;
+        std::cout << "3: Place an ask" << std::endl;
+        std::cout << "4: Place a bid" << std::endl;
+        std::cout << "5: Print wallet" << std::endl;
+        std::cout << "6: Continue" << std::endl;
+
+        int userOption;
+        std::cout << "\033[1;32m"
+                  << "Type in 1-6" 
+                  << "\033[0m" << std::endl;
+        std::cin >> userOption;
+        std::cout << "\e[1;1H\e[2J" << std::endl;
+        std::cout << "\033[1m"
+                  << "You chose " << userOption 
+                  << "\033[0m" << std::endl;
+        
+        switch (userOption) {
+            //case 0:
+            //    std::cout << "\033[0;31mwarning\033[0m" << std::endl;
+            //    break;
+
+            case 1: 
+                std::cout << "Help your aim is to make money." << std::endl;
+                break;
+
+            case 2:
+                std::cout << "Market looks good." << std::endl;
+                break;
+
+            case 3:
+                std::cout << "Mark and offer - enter the amount" << std::endl;
+                break;
+
+            case 4:
+                std::cout << "Make a bid - enter the amount" << std::endl;
+                break;
+
+            case 5:
+                std::cout << "Your wallet is empty." << std::endl;
+                break;
+
+            case 6:
+                std::cout << "Going to next time frame." << std::endl;
+                break;
+
+            default:
+                std::cout << "\033[0;31m"
+                          << "Invalid choise. Choose 1 - 6"
+                          << "\033[0m" << std::endl;
+                break;
+
+        }
+        std::cout << std::endl
+                  << "-----------------------------------------------" << std::endl
+                  << std::endl;
+    }
+}

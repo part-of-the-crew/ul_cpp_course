@@ -1,0 +1,166 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <fstream>
+#include <utility>
+
+using std::string;
+using std::vector;
+using std::cout;
+using std::endl;
+
+
+class SpokenLanguagesEntry {
+    public:
+    SpokenLanguagesEntry( int _code, string _language,double _people )
+    :   code(_code),
+        language(_language),
+        people(_people)
+    {
+        if (1100 == code)
+            cout << "ctor is called, people = " << people << endl;
+    };
+    int code;
+    string language;
+    double people;
+    ~SpokenLanguagesEntry()
+    {
+        if (1100 == code)
+           cout << "dtor is called, people = " << people << endl;
+    }
+    //SpokenLanguagesEntry( ) = default;
+
+    
+        
+    SpokenLanguagesEntry(const SpokenLanguagesEntry& other) // конструктор копирования
+    :   code(other.code),
+        language(other.language),
+        people(other.people)
+    { 
+        if (1100 == code)
+            cout << "cctor" << endl;
+    }
+
+    SpokenLanguagesEntry(SpokenLanguagesEntry&& other) noexcept // конструктор перемещения
+    : code(other.code), language(other.language), people(other.people) 
+    {
+        if (1100 == code)
+            cout << "cmtor" << endl;
+    }
+
+    SpokenLanguagesEntry& operator=(const SpokenLanguagesEntry& other) // присваивание копированием
+    {
+        return *this = SpokenLanguagesEntry(other);
+    }
+
+    SpokenLanguagesEntry& operator=(SpokenLanguagesEntry&& other) noexcept // присваивание перемещением
+    {
+        std::swap(language, other.language);
+        code = other.code;
+        people = other.people;
+        return *this;
+    }
+     
+};
+
+vector<string> tokenise(const string csvLine, char separator, char deletech)
+{
+    vector<string> tokens;
+    string::size_type start, end;
+    string token;
+    start = csvLine.find_first_not_of(separator, 0);
+
+    do { 
+        end = csvLine.find_first_of(separator, start);
+        if (start == csvLine.length() || start == end) break;
+/*
+        if (end >= 0) token = csvLine.substr(start, end - start);
+        else token = csvLine.substr(start, csvLine.length() - start);
+*/
+        token = csvLine.substr(start, end - start);
+        start = end + 1;
+        if (0 != deletech)
+        {
+            string::size_type n_char = token.find_first_of(deletech, 0);
+            while (n_char != token.length() && n_char != string::npos)
+            {
+                token.erase(n_char, 1);
+                n_char = token.find_first_of(deletech, n_char);
+            }
+        }   
+        tokens.push_back(token);
+        
+    } while (end != std::string::npos);
+    return tokens;
+}
+
+int main()
+{
+vector<SpokenLanguagesEntry> Records;
+
+std::string csvFilename{"languages-spoken-total-responses-2018-census-csv.csv"};
+std::ifstream csvFile{csvFilename};
+std::string line;
+int all_strings = 0;
+int invalid_strings = 0;
+
+if (csvFile.is_open())
+{
+    std::cout << "Opened file " << csvFilename << std::endl;
+} else {
+    std::cout << "Problem opening file " << csvFilename << std::endl;
+}
+
+
+while(getline(csvFile, line))
+{
+    all_strings += 1;
+    vector<string> tokens = tokenise(line, ',', '"');
+    int code;
+    string language;
+    double people;
+
+    try
+    {
+        code = std::stoi(tokens[0]);
+    } catch (const std::exception& e)
+    {
+        cout << "Big problem with tokens[0] in line -" << line << endl;
+        invalid_strings += 1;
+        continue;
+    }
+    
+    try
+    {
+        people = std::stod(tokens[2]);
+    } catch (const std::exception& e)
+    {
+        cout << "Big problem with tokens[2] in line -" << line << endl;
+        invalid_strings += 1;
+        continue;
+    }
+    //SpokenLanguagesEntry SpokenLanguages( code, tokens[1], people);
+
+    //Records.push_back ( SpokenLanguages );
+    Records.push_back (
+        SpokenLanguagesEntry {
+            code,
+            tokens[1],
+            people
+        }
+    );
+    cout << "code = " << code << endl;
+    if (code == 1100)
+        return 1;
+}
+csvFile.close();
+
+cout << "Number of lines in the file " << all_strings << endl;
+cout << "Number of valid lines in the file " << Records.size() << endl;
+cout << "Number of invalid lines in the file " << invalid_strings << endl;
+}
+
+/*
+Showing raw data (languages-spoken-total-responses-2018-census-csv.csv) file and source code file. Also you can see followed stats: Number of lines in the file 200 Number of valid lines in the file 196 Number of invalid lines in the file 4.
+I decided pick double type of the last token for experience, although better choice is int.
+*/

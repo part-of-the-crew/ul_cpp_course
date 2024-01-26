@@ -46,6 +46,15 @@
         "sstream": "cpp",
         "stdexcept": "cpp",
         "streambuf": "cpp",
-        "typeinfo": "cpp"
-    }
+        "typeinfo": "cpp",
+        "map": "cpp"
+    },
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/home/amente/Music/repo/ul_cpp_course",
+            "binaryPath": "/home/amente/Music/repo/ul_cpp_course/merch",
+            "binaryArgs": []
+        }
+    ],
+    "C_Cpp.errorSquiggles": "disabled"
 }
