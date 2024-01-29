@@ -1,0 +1,71 @@
+CSVReader.h:15:65: performance: Parameter 'csvLine' is passed by value. It could be passed as a const reference which is usually faster and recommended in C++. [passedByValue]
+     static std::vector<std::string> tokenise(const std::string csvLine, char separator, char deletech);
+                                                                ^
+OrderBook.h:11:9: style: Class 'OrderBook' has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided. [noExplicitConstructor]
+        OrderBook(std::string filename );
+        ^
+MerkelMain.cpp:16:9: style: The scope of the variable 'input' can be reduced. Warning: Be careful when fixing this message, especially when there are inner loops. Here is an example where cppcheck will write that the scope for 'i' can be reduced:
+void f(int x)
+{
+    int i = 0;
+    if (x) {
+        // it's safe to move 'int i = 0;' here
+        for (int n = 0; n < 10; ++n) {
+            // it is possible but not safe to move 'int i = 0;' here
+            do_something(&i);
+        }
+    }
+}
+When you see this message it is always safe to reduce the variable scope 1 level. [variableScope]
+    int input;
+        ^
+OrderBook.cpp:8:5: performance: When an object of a class is created, the constructors of all member variables are called consecutively in the order the variables are declared, even if you don't explicitly write them to the initialization list. You could avoid assigning 'orders' a value by passing the value to the constructor in the initialization list. [useInitializationList]
+    orders = CSVReader::readCSV(filename);
+    ^
+OrderBook.cpp:13:84: performance: Parameter 'product' is passed by value. It could be passed as a const reference which is usually faster and recommended in C++. [passedByValue]
+std::vector <OrderBookEntry> OrderBook::getOrders (OrderBookType type, std::string product, std::string  time)
+                                                                                   ^
+OrderBook.cpp:13:106: performance: Parameter 'time' is passed by value. It could be passed as a const reference which is usually faster and recommended in C++. [passedByValue]
+std::vector <OrderBookEntry> OrderBook::getOrders (OrderBookType type, std::string product, std::string  time)
+                                                                                                         ^
+OrderBook.cpp:89:49: performance: Parameter 'timestamp' is passed by value. It could be passed as a const reference which is usually faster and recommended in C++. [passedByValue]
+std::string OrderBook::getNextTime( std::string timestamp )
+                                                ^
+OrderBook.cpp:32:63: style: Parameter 'orders' can be declared with const [constParameter]
+double OrderBook::getHighPrice (std::vector <OrderBookEntry>& orders)
+                                                              ^
+OrderBook.cpp:44:62: style: Parameter 'orders' can be declared with const [constParameter]
+double OrderBook::getLowPrice (std::vector <OrderBookEntry>& orders)
+                                                             ^
+OrderBook.cpp:56:65: style: Parameter 'orders' can be declared with const [constParameter]
+double OrderBook::getMarketDepth (std::vector <OrderBookEntry>& orders)
+                                                                ^
+OrderBook.cpp:24:19: style: Consider using std::copy_if algorithm instead of a raw loop. [useStlAlgorithm]
+        orders_sub.push_back(e);
+                  ^
+OrderBook.cpp:39:17: style: Consider using std::accumulate algorithm instead of a raw loop. [useStlAlgorithm]
+            max = e.price;
+                ^
+OrderBook.cpp:51:17: style: Consider using std::accumulate algorithm instead of a raw loop. [useStlAlgorithm]
+            min = e.price;
+                ^
+OrderBook.cpp:61:13: style: Consider using std::accumulate algorithm instead of a raw loop. [useStlAlgorithm]
+        sum += e.amount;
+            ^
+OrderBook.cpp:76:18: style: Consider using std::transform algorithm instead of a raw loop. [useStlAlgorithm]
+        products.push_back(e.first);
+                 ^
+OrderBookEntry.cpp:5:37: performance: Parameter '_timestamp' is passed by value. It could be passed as a const reference which is usually faster and recommended in C++. [passedByValue]
+                        std::string _timestamp,
+                                    ^
+OrderBookEntry.cpp:6:37: performance: Parameter '_product' is passed by value. It could be passed as a const reference which is usually faster and recommended in C++. [passedByValue]
+                        std::string _product,
+                                    ^
+OrderBookEntry.cpp:17:65: performance: Parameter 's' is passed by value. It could be passed as a const reference which is usually faster and recommended in C++. [passedByValue]
+OrderBookType OrderBookEntry::stringToOrderBookType(std::string s)
+                                                                ^
+OrderBookEntry.h:7:1: error: Code 'classOrderBookEntry{' is invalid C code. Use --std or --language to configure the language. [syntaxError]
+class OrderBookEntry
+^
+nofile:0:0: information: Cppcheck cannot find all the include files. Cppcheck can check the code without the include files found. But the results will probably be more accurate if all the include files are found. Please check your project's include directories and add all of them as include directories for Cppcheck. To see what files Cppcheck cannot find use --check-config. [missingIncludeSystem]
+

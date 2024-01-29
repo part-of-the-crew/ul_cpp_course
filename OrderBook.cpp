@@ -1,27 +1,11 @@
-
 #include <map>
+#include <numeric>
 
 #include "OrderBook.h"
 
 OrderBook::OrderBook(std::string filename )
 {
     orders = CSVReader::readCSV(filename);
-}
-
-std::vector <std::string> OrderBook::getKnownProducts()
-{
-    std::vector <std::string>  products;
-    std::map<std::string, bool> prodMap;
-
-    for (auto const& e: orders){
-        prodMap[e.product] = true;
-    }
-
-    for (auto const& e: prodMap){
-        products.push_back(e.first);
-    }
-
-    return products;
 }
 
 
@@ -35,7 +19,7 @@ std::vector <OrderBookEntry> OrderBook::getOrders (OrderBookType type, std::stri
         if (
             e.orderType == type &&
             e.product == product &&
-            e.timestamp == time
+            (e.timestamp == time || "0" == time)
         )
         orders_sub.push_back(e);
     }
@@ -68,6 +52,41 @@ double OrderBook::getLowPrice (std::vector <OrderBookEntry>& orders)
     }
     return min;
 }
+/*
+double OrderBook::getMarketDepth (std::vector <OrderBookEntry>& orders)
+{
+    return std::accumulate(orders.begin(), orders.end(), 0,
+        [](double accumulator, const OrderBookEntry& entry) {
+            return accumulator + entry.amount;});
+}
+*/
+double OrderBook::getMarketDepth (std::vector <OrderBookEntry>& orders)
+{
+    double sum = 0;
+    for (auto const& e: orders)
+    {
+        sum += e.amount;
+    }
+    return sum;
+}
+
+std::vector <std::string> OrderBook::getKnownProducts()
+{
+    std::vector <std::string> products;
+    std::map<std::string, bool> prodMap;
+
+    for (auto const& e: orders){
+        prodMap[e.product] = true;
+    }
+
+    for (auto const& e: prodMap){
+        products.push_back(e.first);
+    }
+
+    return products;
+}
+
+
 
 std::string OrderBook::getEarliestTime()
 {

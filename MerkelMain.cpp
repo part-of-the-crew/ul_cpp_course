@@ -1,6 +1,7 @@
 #include "MerkelMain.h"
 #include <iostream>
 #include <vector>
+
 #include "OrderBookEntry.h"
 #include "CSVReader.h"
 
@@ -14,6 +15,7 @@ void MerkelMain::init()
 {
 
     int input;
+    currentTime = orderBook.getEarliestTime();
     while(true)
     {
         printMenu();
@@ -21,7 +23,8 @@ void MerkelMain::init()
         processUserOption(input);
     }
 
-    currentTime = orderBook.getEarliestTime();
+    
+
 }
 
 
@@ -52,6 +55,7 @@ void MerkelMain::printHelp()
 
 void MerkelMain::printMarketStats()
 {
+    const std::string str2 = "0";
     for (auto const& e: orderBook.getKnownProducts()){
         std::cout << "Product " << e << std::endl;
 
@@ -63,8 +67,18 @@ void MerkelMain::printMarketStats()
 
         std::cout << "Max asks seen:  " << OrderBook::getHighPrice(entries) << std::endl;
         std::cout << "Min asks seen:  " << OrderBook::getLowPrice(entries) << std::endl;
+
+
+        entries = orderBook.getOrders( OrderBookType::ask, e, str2 );
+        std::cout << "MarketDepth(ask):  " << OrderBook::getMarketDepth(entries) << std::endl;
+
+        entries = orderBook.getOrders( OrderBookType::bid, e, str2 );
+        std::cout << "MarketDepth(bid):  " << OrderBook::getMarketDepth(entries) << std::endl;
+        
+
     }
     
+
 }
 
 void MerkelMain::enterOffer()
