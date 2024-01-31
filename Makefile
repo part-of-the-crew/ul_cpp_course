@@ -1,7 +1,7 @@
 appname := merch
 
 CXX = g++-10
-CXXFLAGS := -Wall -Wextra -g -std=c++20
+CXXFLAGS := -Wall -Wextra -Wpedantic -g -std=c++20
 
 srcfiles := $(shell find . -maxdepth 1 -name "*.cpp")
 objects  := $(patsubst %.cpp, %.o, $(srcfiles))
