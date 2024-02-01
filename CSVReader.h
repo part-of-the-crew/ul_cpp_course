@@ -8,10 +8,10 @@
 class CSVReader
 {
     public:
-     CSVReader();
+     CSVReader() = default;
 
      static std::vector<OrderBookEntry> readCSV(std::string csvFile);
-     static std::vector<std::string> tokenise(const std::string csvLine, char separator, char deletech);
+     static std::vector<std::string> tokenise(const std::string& csvLine, char separator, char deletech);
      static OrderBookEntry stringsToOBE(
                                         std::string price, 
                                         std::string amount,

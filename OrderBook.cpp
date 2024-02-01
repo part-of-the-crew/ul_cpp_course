@@ -3,18 +3,24 @@
 
 #include "OrderBook.h"
 
-OrderBook::OrderBook(std::string filename )
+OrderBook::OrderBook(const std::string& filename ): orders(CSVReader::readCSV(filename))
 {
-    orders = CSVReader::readCSV(filename);
+   // orders = CSVReader::readCSV(filename);
 }
 
 
 
-std::vector <OrderBookEntry> OrderBook::getOrders (OrderBookType type, std::string product, std::string  time)
+std::vector <OrderBookEntry> OrderBook::getOrders (OrderBookType type, const std::string& product, const std::string&  time)
 {
     std::vector <OrderBookEntry> orders_sub;
 
-
+    copy_if (begin(orders), end(orders), back_inserter(orders_sub),
+            [type, &product, &time](
+                const OrderBookEntry &order
+            ){
+                return order.orderType == type && order.product == product && (order.timestamp == time || "0" == time);
+            });
+ /*           
     for (auto const& e: orders){
         if (
             e.orderType == type &&
@@ -25,11 +31,11 @@ std::vector <OrderBookEntry> OrderBook::getOrders (OrderBookType type, std::stri
     }
 
 
-
+*/
     return orders_sub;
 }
-
-double OrderBook::getHighPrice (std::vector <OrderBookEntry>& orders)
+/*
+double OrderBook::getHighPrice (const std::vector <OrderBookEntry>& orders)
 {
     double max = orders[0].price;
 
@@ -41,7 +47,7 @@ double OrderBook::getHighPrice (std::vector <OrderBookEntry>& orders)
     return max;
 }
 
-double OrderBook::getLowPrice (std::vector <OrderBookEntry>& orders)
+double OrderBook::getLowPrice (const std::vector <OrderBookEntry>& orders)
 {
     double min = orders[0].price;
 
@@ -52,15 +58,31 @@ double OrderBook::getLowPrice (std::vector <OrderBookEntry>& orders)
     }
     return min;
 }
-/*
-double OrderBook::getMarketDepth (std::vector <OrderBookEntry>& orders)
-{
-    return std::accumulate(orders.begin(), orders.end(), 0,
-        [](double accumulator, const OrderBookEntry& entry) {
-            return accumulator + entry.amount;});
-}
 */
-double OrderBook::getMarketDepth (std::vector <OrderBookEntry>& orders)
+double OrderBook::getHighPrice (const std::vector <OrderBookEntry>& orders)
+{
+    auto it = std::max_element(begin(orders), end(orders), [](const OrderBookEntry &a, const OrderBookEntry &b) {
+            return a.price < b.price;
+        });
+    return it->price;
+}
+
+double OrderBook::getLowPrice (const std::vector <OrderBookEntry>& orders)
+{
+    auto it = std::min_element(begin(orders), end(orders), [](const OrderBookEntry &a, const OrderBookEntry &b) {
+            return a.price < b.price;
+        });
+    return it->price;
+}
+
+double OrderBook::getMarketDepth (const std::vector <OrderBookEntry>& orders)
+{
+    return std::accumulate(begin(orders), end(orders), 0, [](double acc, const OrderBookEntry& entry) {
+            return acc + entry.amount;
+        });
+}
+/*
+double OrderBook::getMarketDepth (const std::vector <OrderBookEntry>& orders)
 {
     double sum = 0;
     for (auto const& e: orders)
@@ -69,7 +91,7 @@ double OrderBook::getMarketDepth (std::vector <OrderBookEntry>& orders)
     }
     return sum;
 }
-
+*/
 std::vector <std::string> OrderBook::getKnownProducts()
 {
     std::vector <std::string> products;
@@ -78,11 +100,30 @@ std::vector <std::string> OrderBook::getKnownProducts()
     for (auto const& e: orders){
         prodMap[e.product] = true;
     }
-
+/*
     for (auto const& e: prodMap){
         products.push_back(e.first);
     }
+*/
 
+    std::transform(cbegin(prodMap), cend(prodMap), std::back_inserter(products),
+                    [](const std::pair <std::string, bool>& p) { 
+                        return p.first;
+                    });
+
+/*
+    copy (prodMap.cbegin(), prodMap.cend(), back_inserter(products), []() {
+            return 
+        });
+
+
+    copy_if (begin(orders), end(orders), back_inserter(orders_sub),
+            [type, &product, &time](
+                const OrderBookEntry &order
+            ){
+                return order.orderType == type && order.product == product && (order.timestamp == time || "0" == time);
+            });
+*/        
     return products;
 }
 
@@ -93,7 +134,7 @@ std::string OrderBook::getEarliestTime()
     return orders[0].timestamp;
 }
 
-std::string OrderBook::getNextTime( std::string timestamp )
+std::string OrderBook::getNextTime( const std::string& timestamp )
 {
     std::string next_timestamp = "";
 

@@ -14,12 +14,11 @@ MerkelMain::MerkelMain()
 void MerkelMain::init()
 {
 
-    int input;
     currentTime = orderBook.getEarliestTime();
     while(true)
     {
         printMenu();
-        input = getUserOption();
+        int input = getUserOption();
         processUserOption(input);
     }
 
@@ -59,8 +58,7 @@ void MerkelMain::printMarketStats()
     for (auto const& e: orderBook.getKnownProducts()){
         std::cout << "Product " << e << std::endl;
 
-        auto entries = orderBook.getOrders(
-                                            OrderBookType::ask,
+        auto entries = orderBook.getOrders( OrderBookType::ask,
                                             e,
                                             currentTime );
         std::cout << "Asks seen:  " << entries.size() << std::endl;

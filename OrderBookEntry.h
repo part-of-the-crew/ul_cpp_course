@@ -10,11 +10,11 @@ class OrderBookEntry
 
         OrderBookEntry( double _price, 
                         double _amount, 
-                        std::string _timestamp, 
-                        std::string _product, 
+                        std::string& _timestamp, 
+                        std::string& _product, 
                         OrderBookType _orderType);
 
-        static OrderBookType stringToOrderBookType(std::string s);
+        static OrderBookType stringToOrderBookType(const std::string& s);
 
         double price;
         double amount;

@@ -4,14 +4,16 @@
 
 using std::string;
 using std::vector;
-
+/*
 CSVReader::CSVReader()
 {
 
 }
-
+*/
 std::vector<OrderBookEntry> CSVReader::readCSV(std::string csvFilename)
 {
+    
+    
     std::vector<OrderBookEntry> entries;
 
     std::ifstream csvFile{csvFilename};
@@ -34,7 +36,7 @@ std::vector<OrderBookEntry> CSVReader::readCSV(std::string csvFilename)
     return entries; 
 }
 
-std::vector<std::string> CSVReader::tokenise(const string csvLine, char separator, char deletech)
+std::vector<std::string> CSVReader::tokenise(const string& csvLine, char separator, char deletech)
 
 {
     vector<string> tokens;
