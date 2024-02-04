@@ -4,17 +4,22 @@
 
 #include "OrderBookEntry.h"
 #include "CSVReader.h"
-
+/*
 MerkelMain::MerkelMain()
 {
 
 
 }
-
+*/
 void MerkelMain::init()
 {
 
     currentTime = orderBook.getEarliestTime();
+
+
+    wallet.insertCurrency("BTC", 10.0);
+
+
     while(true)
     {
         printMenu();
@@ -93,7 +98,14 @@ void MerkelMain::enterAsk()
     } else {
         try {
             OrderBookEntry obe = CSVReader::stringsToOBE(tokens[1], tokens[2], currentTime, tokens[0], OrderBookType::ask);
-            orderBook.insertOrder(obe);
+            if (wallet.canFulfillOrder(obe))
+            {
+                std::cout << "Wallet looks good" << std::endl;
+                orderBook.insertOrder(obe);
+            } else{
+                std::cout << "Order has unsufficient funds" << std::endl;
+            }
+            
 
         } catch (const std::exception& e)  {
             std::cout << "Bad input in MerkelMain::enterAsk " << std::endl;
@@ -119,7 +131,13 @@ void MerkelMain::enterBid()
     } else {
         try {
             OrderBookEntry obe = CSVReader::stringsToOBE(tokens[1], tokens[2], currentTime, tokens[0], OrderBookType::bid);
-            orderBook.insertOrder(obe);
+            if (wallet.canFulfillOrder(obe))
+            {
+                std::cout << "Wallet looks good" << std::endl;
+                orderBook.insertOrder(obe);
+            } else {
+                std::cout << "Order has unsufficient funds" << std::endl;
+            }
 
         } catch (const std::exception& e)  {
             std::cout << "Bad input in MerkelMain::enterBid " << std::endl;
@@ -127,13 +145,14 @@ void MerkelMain::enterBid()
         
     }
 
-    std::cout << "You typed: " << input << std::endl;
+    std::cout << "You typed: " << input << "\n" << std::endl;
 
 }
 
 void MerkelMain::printWallet()
 {
-    std::cout << "Your wallet is empty. " << std::endl;
+    std::cout << "Your wallet is:" << std::endl;
+    std::cout << wallet.toString() << std::endl;
 }
         
 void MerkelMain::gotoNextTimeframe()

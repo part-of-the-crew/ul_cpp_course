@@ -3,11 +3,12 @@
 #include <vector>
 #include "OrderBookEntry.h"
 #include "OrderBook.h"
+#include "Wallet.h"
 
 class MerkelMain
 {
     public:
-        MerkelMain();
+        MerkelMain() = default;
         /** Call this to start the sim */
         void init();
     private: 
@@ -21,8 +22,11 @@ class MerkelMain
         int getUserOption();
         void processUserOption(int userOption);
 
-        //OrderBook orderBook {"20200317.csv"};
-        OrderBook orderBook {"20200317_.csv"};
+        OrderBook orderBook {"20200317.csv"};
+        Wallet wallet;
+
+
+
         std::string currentTime;
 
 
