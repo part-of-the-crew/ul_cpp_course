@@ -21,7 +21,7 @@ void  Wallet::insertCurrency (std::string type, double amount)
     double balance;
     if ( amount < 0)
         //throw std::runtime_error(std::format("amount < 0 {0}: {1}", errno, strerror(errno)));
-        throw std::exception{};
+        throw std::invalid_argument("Trying to insert amount < 0");
 
     if (0 == currencies.count(type))
         currencies[type] = amount;
@@ -32,10 +32,10 @@ void  Wallet::insertCurrency (std::string type, double amount)
 
 }
 
-bool Wallet::removeCurrency (std::string& type, double amount)
+bool Wallet::removeCurrency (std::string type, double amount)
 {
     if ( amount < 0)
-        throw std::exception{};
+        throw std::invalid_argument("Trying to remove amount < 0");
 
     if (0 == currencies.count(type))
         return false;
@@ -52,7 +52,7 @@ bool Wallet::removeCurrency (std::string& type, double amount)
 
 }
 
-bool  Wallet::containCurrency (std::string& type, double amount)
+bool  Wallet::containCurrency (std::string type, double amount)
 {
     if (0 == currencies.count(type))
         return false;
@@ -82,5 +82,34 @@ bool Wallet::canFulfillOrder (const OrderBookEntry& order)
         return containCurrency(curr[1], order.amount * order.price);
 
     return false;
+
+}
+
+void Wallet::processSale(const OrderBookEntry& sale)
+{
+    std::vector <std::string> curr = CSVReader::tokenise (sale.product, '/', 0);
+    //ask
+
+    if (sale.orderType == OrderBookType::asksale)
+    {
+        double outgoingAmount = sale.amount;
+        std::string outgoingCurrency = curr[0];
+        double incomingAmount = sale.amount * sale.price;
+        std::string incomingCurrency = curr[1];
+
+        currencies[incomingCurrency] += incomingAmount;
+        currencies[outgoingCurrency] -= outgoingAmount;
+    }
+
+        if (sale.orderType == OrderBookType::asksale)
+    {
+        double incomingAmount = sale.amount;
+        std::string incomingCurrency = curr[0];
+        double outgoingAmount = sale.amount * sale.price;
+        std::string outgoingCurrency = curr[1];
+
+        currencies[incomingCurrency] += incomingAmount;
+        currencies[outgoingCurrency] -= outgoingAmount;
+    }
 
 }

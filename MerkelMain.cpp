@@ -98,6 +98,7 @@ void MerkelMain::enterAsk()
     } else {
         try {
             OrderBookEntry obe = CSVReader::stringsToOBE(tokens[1], tokens[2], currentTime, tokens[0], OrderBookType::ask);
+            obe.username = "simuser";
             if (wallet.canFulfillOrder(obe))
             {
                 std::cout << "Wallet looks good" << std::endl;
@@ -131,6 +132,7 @@ void MerkelMain::enterBid()
     } else {
         try {
             OrderBookEntry obe = CSVReader::stringsToOBE(tokens[1], tokens[2], currentTime, tokens[0], OrderBookType::bid);
+            obe.username = "simuser";
             if (wallet.canFulfillOrder(obe))
             {
                 std::cout << "Wallet looks good" << std::endl;
@@ -167,6 +169,11 @@ void MerkelMain::gotoNextTimeframe()
         for (OrderBookEntry& sale : sales)
         {
             std::cout << "Sale price: " << sale.price << " amount " << sale.amount << std::endl;
+            if ("simuser" == sale.username)
+            {
+                //update the wallet
+                wallet.processSale (sale);
+            }
         }
     }
     currentTime = orderBook.getNextTime(currentTime);

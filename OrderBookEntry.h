@@ -2,7 +2,7 @@
 
 #include <string>
 
-enum class OrderBookType{bid, ask, unknown, sale};
+enum class OrderBookType{bid, ask, unknown, bidsale, asksale};
 
 class OrderBookEntry
 {
@@ -10,9 +10,10 @@ class OrderBookEntry
 
         OrderBookEntry( double _price, 
                         double _amount, 
-                        std::string& _timestamp, 
-                        std::string& _product, 
-                        OrderBookType _orderType);
+                        const std::string& _timestamp, 
+                        const std::string& _product, 
+                        OrderBookType _orderType,
+                        std::string username = "dataset");
 
         static OrderBookType stringToOrderBookType(const std::string& s);
 
@@ -21,5 +22,6 @@ class OrderBookEntry
         std::string timestamp;
         std::string product;
         OrderBookType orderType;
+        std::string username;
 };
  
